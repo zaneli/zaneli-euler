@@ -4,6 +4,8 @@ module Zaneli.Euler (
   divSum,
   divSum',
   primeFactors,
+  fib,
+  fibs,
 ) where
 
 -- n番目までの素数のリスト(降順)を返す
@@ -57,3 +59,17 @@ primeFactors n = primeFactors' n 2 []
           -- n を(基数, 指数)のタプルのリストに追加する。基数として追加されていなければ追加し、追加されていれば指数に1加算したタプルに差し替える
           updateList | any (\(p, _) -> p == n) list = map (\(p, a) -> (p, if p == n then a + 1 else a)) list
                      | otherwise                    = (n, 1):list
+
+
+-- 0番目の項を0, 1番目の項を1とするフィボナッチ数を返す
+fib :: (Num a, Ord a, Num b) => a -> b
+fib 0 = 0
+fib n = head $ fibs n
+
+-- 要素数nの逆順のフィボナッチ数列を返す
+fibs :: (Num a, Ord a, Num b) => a -> [b]
+fibs n | n <= 0 = []
+fibs 1          = [1]
+fibs 2          = [1, 1]
+fibs n          = let ns@(f:s:_) = fibs (n-1) in (f+s):ns
+
