@@ -1,4 +1,5 @@
 module Zaneli.Euler (
+  isPrime,
   primesLimitIndex,
   primesLimitNum,
   divSum,
@@ -7,6 +8,10 @@ module Zaneli.Euler (
   fib,
   fibs,
 ) where
+
+-- n が素数かどうかを返す
+isPrime :: Integral a => a -> Bool
+isPrime n = n == (head $ primesLimitNum n)
 
 -- n番目までの素数のリスト(降順)を返す
 primesLimitIndex :: Integral a => Int -> [a]
