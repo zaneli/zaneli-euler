@@ -7,7 +7,13 @@ module Zaneli.Euler (
   primeFactors,
   fib,
   fibs,
+  listToNum,
+  numToList
 ) where
+
+import Data.Char (digitToInt)
+import Data.List (foldl1')
+
 
 -- n が素数かどうかを返す
 isPrime :: Integral a => a -> Bool
@@ -78,3 +84,11 @@ fibs 1          = [1]
 fibs 2          = [1, 1]
 fibs n          = let ns@(f:s:_) = fibs (n-1) in (f+s):ns
 
+
+-- 一桁ずつの数値のリストを一つの数値に変換する
+listToNum :: Num a => [a] -> a
+listToNum = foldl1' (\a b -> a * 10 + b)
+
+-- 一つの数値を一桁ずつの数値のリストに変換する
+numToList :: (Num a, Show a) => a -> [Int]
+numToList = map digitToInt . show
