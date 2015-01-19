@@ -2,6 +2,7 @@ module Zaneli.Euler (
   isPrime,
   primesLimitIndex,
   primesLimitNum,
+  primes,
   divSum,
   divSum',
   primeFactors,
@@ -17,24 +18,33 @@ import Data.List (foldl1')
 
 -- n が素数かどうかを返す
 isPrime :: Integral a => a -> Bool
-isPrime n = n == (head $ primesLimitNum n)
+isPrime n = primes f
+  where
+    f m list | m > n     = Just $ n == head list
+             | otherwise = Nothing
 
 -- n番目までの素数のリスト(降順)を返す
 primesLimitIndex :: Integral a => Int -> [a]
-primesLimitIndex n = primes (\_ list -> length list >= n)
+primesLimitIndex n = primes f
+  where
+    f _ list | length list >= n = Just list
+             | otherwise        = Nothing
 
 -- n までの素数のリスト(降順)を返す
 primesLimitNum :: Integral a => a -> [a]
-primesLimitNum n = primes (\m _ -> m > n)
+primesLimitNum n = primes f
+  where
+    f m list | m > n     = Just list
+             | otherwise = Nothing
 
--- isExitを終了条件とする素数のリスト(降順)を返す
-primes :: Integral a => (a -> [a] -> Bool) -> [a]
-primes isExit = primes' 3 [2] []
+-- retがNothingの場合は素数かどうかを再帰的に調べ素数のリストを作り、Justの場合はその値を返す。(通常、作った素数のリスト)
+primes :: Integral a => (a -> [a] -> Maybe b) -> b
+primes ret = primes' 3 [2] []
     where
       -- mがlist'の要素のいずれでも割り切れない場合、mを素数とみなしてlistの先頭とlist'の末尾に追加する
       -- list'はisPrimeの処理高速化のため、昇順でのリストを保持する
       primes' m list list'
-        | isExit m list = list
+        | Just r <- ret m list = r
         | isPrime list' = primes' (m + 2) (m:list) (list' ++ [m])
         | otherwise     = primes' (m + 2) list list'
           where
