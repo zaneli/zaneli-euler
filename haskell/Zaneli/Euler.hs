@@ -20,33 +20,35 @@ import Data.List (foldl1')
 isPrime :: Integral a => a -> Bool
 isPrime n = primes f
   where
-    f m list | m > n     = Just $ n == head list
-             | otherwise = Nothing
+    f m list _ | m > n     = Just $ n == head list
+               | otherwise = Nothing
 
 -- n番目までの素数のリスト(降順)を返す
 primesLimitIndex :: Integral a => Int -> [a]
+primesLimitIndex 0 = []
 primesLimitIndex n = primes f
   where
-    f _ list | length list >= n = Just list
-             | otherwise        = Nothing
+    f _ list cnt | cnt >= n  = Just list
+                 | otherwise = Nothing
 
 -- n までの素数のリスト(降順)を返す
 primesLimitNum :: Integral a => a -> [a]
-primesLimitNum n = primes f
+primesLimitNum n | n < 2     = []
+                 | otherwise = primes f
   where
-    f m list | m > n     = Just list
-             | otherwise = Nothing
+    f m list _ | m > n     = Just list
+               | otherwise = Nothing
 
 -- retがNothingの場合は素数かどうかを再帰的に調べ素数のリストを作り、Justの場合はその値を返す。(通常、作った素数のリスト)
-primes :: Integral a => (a -> [a] -> Maybe b) -> b
-primes ret = primes' 3 [2] []
+primes :: (Integral a, Num b) => (a -> [a] -> b -> Maybe c) -> c
+primes ret = primes' 3 [2] [] 1
     where
       -- mがlist'の要素のいずれでも割り切れない場合、mを素数とみなしてlistの先頭とlist'の末尾に追加する
       -- list'はisPrimeの処理高速化のため、昇順でのリストを保持する
-      primes' m list list'
-        | Just r <- ret m list = r
-        | isPrime list' = primes' (m + 2) (m:list) (list' ++ [m])
-        | otherwise     = primes' (m + 2) list list'
+      primes' m list list' cnt
+        | Just r <- ret m list cnt = r
+        | isPrime list'            = primes' (m + 2) (m:list) (list' ++ [m]) (cnt + 1)
+        | otherwise                = primes' (m + 2) list list' cnt
           where
             isPrime = all (\x -> m `mod` x /= 0) . takeWhile (\x -> x ^ 2 <= m)
 
