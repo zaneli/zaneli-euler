@@ -18,10 +18,9 @@ import Data.List (foldl1')
 
 -- n が素数かどうかを返す
 isPrime :: Integral a => a -> Bool
-isPrime n = primes f
-  where
-    f m list _ | m > n     = Just $ n == head list
-               | otherwise = Nothing
+isPrime 2             = True
+isPrime n | even n    = False
+          | otherwise = all (\m -> n `mod` m /= 0) [3,5..(truncate $ sqrt $ fromIntegral n)]
 
 -- n番目までの素数のリスト(降順)を返す
 primesLimitIndex :: Integral a => Int -> [a]
